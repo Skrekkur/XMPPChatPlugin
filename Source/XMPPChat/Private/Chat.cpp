@@ -12,7 +12,7 @@ DEFINE_LOG_CATEGORY(LogChat);
 UChatMember::UChatMember(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer),
 	Status(EUXmppPresenceStatus::Offline),
 	bIsAvailable(false),
-	Affiliation(EUChatMemberRole::Member)
+	Role(EUChatMemberRole::Participant)
 {
 }
 
@@ -26,7 +26,7 @@ void UChatMember::ConvertFrom(const FXmppChatMember& ChatMember)
 	//ClientResource = ChatMember.UserPresence.ClientResource;
 	//NickName = ChatMember.UserPresence.NickName;
 	StatusStr = ChatMember.UserPresence.StatusStr;
-	Affiliation = UChatUtil::GetEUChatMemberRole(ChatMember.Affiliation);
+	Role = UChatUtil::GetEUChatMemberRole(ChatMember.Role);
 }
 
 /***************** Base **************************/
@@ -352,11 +352,11 @@ void UChat::MucExit(const FString& RoomId)
 	}
 }
 
-void UChat::MucChat(const FString& RoomId, const FString& Body)
+void UChat::MucChat(const FString& RoomId, const FString& Body, const FString& ChatInfo)
 {				
 	if (XmppConnection.IsValid() && XmppConnection->MultiUserChat().IsValid())
 	{
-		XmppConnection->MultiUserChat()->SendChat(RoomId, Body);
+		XmppConnection->MultiUserChat()->SendChat(RoomId, Body, ChatInfo);
 	}
 }
 
