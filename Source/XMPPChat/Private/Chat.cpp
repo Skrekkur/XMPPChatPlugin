@@ -12,7 +12,7 @@ DEFINE_LOG_CATEGORY(LogChat);
 UChatMember::UChatMember(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer),
 	Status(EUXmppPresenceStatus::Offline),
 	bIsAvailable(false),
-	Role(EUChatMemberRole::Participant)
+	Role(EUChatMemberRole::Participant),
 	Affiliation(EUChatMemberAffiliation::Member)
 {
 }
