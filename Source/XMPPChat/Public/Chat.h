@@ -8,7 +8,6 @@
 
 
 DECLARE_LOG_CATEGORY_EXTERN(LogChat, Warning, All);
-
 /**
 * BP Enum EUXmppPresenceStatus mapping to non-BP EXmppPresenceStatus
 */
@@ -17,11 +16,17 @@ namespace EUXmppPresenceStatus
 {
 	enum Type
 	{
+		// online while connected
 		Online,
+		// offline if not connected
 		Offline,
+		// online but away due to being afk or manually set
 		Away,
+		// online but away for a long period or manually set
 		ExtendedAway,
+		// manually set to avoid interruptions
 		DoNotDisturb,
+		// currently chatting. implies online
 		Chat
 	};
 }
@@ -35,10 +40,14 @@ namespace EUXmppLoginStatus
 {
 	enum Type
 	{
+		NotStarted,
+		ProcessingLogin,
+		ProcessingLogout,
 		LoggedIn,
 		LoggedOut
 	};
 }
+
 
 /**
 * BP Enum EXmppChatMemberRole mapping to non-BP EUChatMemberRole
@@ -49,11 +58,36 @@ namespace EUChatMemberRole
 {
 	enum Type
 	{
-		Owner,
+		/* A moderator is the most powerful role within the context of the room, and can to some extent manage other occupants' roles in the room. */
 		Moderator,
+	    /* A participant has fewer privileges than a moderator, although he or she always has the right to speak. */
+		Participant,
+		/* A visitor is a more restricted role within the context of a moderated room */
+		Visitor,
+		None
+	};
+}
+
+/**
+* BP Enum EXmppChatMemberAffiliation mapping to non-BP EUChatMemberRole
+* Role of a chat room member
+*/
+UENUM(BlueprintType)
+namespace EUChatMemberAffiliation
+{
+	enum Type
+	{
+		/** Owner of the room */
+		Owner,
+		/* An admin or owner enters a room as a moderator */
+		Admin, 
+		/* A member enters a room as a participant. */
+		/* As a default, an unaffiliated user enters a moderated room as a visitor, and enters an open room as a participant. */
 		Member,
-		None,
-		Outcast
+		/** Banned from the room */
+		Outcast,
+		/** Absence of an affiliation */
+		None
 	};
 }
 
@@ -97,18 +131,32 @@ namespace UChatUtil
 		}
 	}
 
-	inline EUChatMemberRole::Type GetEUChatMemberRole(const EXmppChatMemberRole::Type Status)
+	inline EUChatMemberRole::Type GetEUChatMemberRole(const EXmppChatMemberRole::Type Role)
 	{
-		switch (Status)
+		switch (Role)
 		{
-		case EXmppChatMemberRole::Owner: return EUChatMemberRole::Owner;
 		case EXmppChatMemberRole::Moderator: return EUChatMemberRole::Moderator;
-		case EXmppChatMemberRole::Member: return EUChatMemberRole::Member;
-		case EXmppChatMemberRole::None: return EUChatMemberRole::None;
+		case EXmppChatMemberRole::Participant: return EUChatMemberRole::Participant;
+		case EXmppChatMemberRole::Visitor: return EUChatMemberRole::Visitor;
 		default:
-		case EXmppChatMemberRole::Outcast: return EUChatMemberRole::Outcast;
+		case EXmppChatMemberRole::None: return EUChatMemberRole::None;
 		}
 	}
+
+		inline EUChatMemberAffiliation::Type GetEUChatMemberAffiliation(const EXmppChatMemberAffiliation::Type Affiliation)
+	{
+		switch (Affiliation)
+		{
+		case EXmppChatMemberAffiliation::Owner: return EUChatMemberAffiliation::Owner;
+		case EXmppChatMemberAffiliation::Admin: return EUChatMemberAffiliation::Admin;
+		case EXmppChatMemberAffiliation::Member: return EUChatMemberAffiliation::Member;
+		case EXmppChatMemberAffiliation::Outcast: return EUChatMemberAffiliation::Outcast;
+		default:
+		case EXmppChatMemberAffiliation::None: return EUChatMemberAffiliation::None;
+		}
+	}
+
+
 }
 
 /** Generate a delegates for callback events */
@@ -162,7 +210,10 @@ public:
 	FString StatusStr;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Chat|Member")
-	TEnumAsByte<EUChatMemberRole::Type> Affiliation;
+	TEnumAsByte<EUChatMemberRole::Type> Role;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Chat|Member")
+	TEnumAsByte<EUChatMemberAffiliation::Type> Affiliation;
 
 	void ConvertFrom(const FXmppChatMember& ChatMember);
 };
@@ -311,7 +362,7 @@ public:
 	void MucExit(const FString& RoomId);
 
 	UFUNCTION(BlueprintCallable, Category = "Chat|MUC")
-	void MucChat(const FString& RoomId, const FString& Body);
+	void MucChat(const FString& RoomId, const FString& Body, const FString& ChatInfo);
 
 	UFUNCTION(BlueprintCallable, Category = "Chat|MUC")
 	void MucConfig(const FString& UserName, const FString& RoomId, bool bIsPrivate, const FString& Password);
