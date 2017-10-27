@@ -1,15 +1,15 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "1.0",
+	"VersionName": "1",
 	"FriendlyName": "XMPPChat",
 	"Description": "Use XMPP Module from Blueprint",
 	"Category": "Network",
-	"CreatedBy": "",
-	"CreatedByURL": "",
+	"CreatedBy": "DescendentStudios",
+	"CreatedByURL": "https://github.com/DescendentStudios/XMPPChatPlugin",
 	"DocsURL": "",
 	"MarketplaceURL": "",
-	"SupportURL": "",
+	"SupportURL": "https://github.com/DescendentStudios/XMPPChatPlugin",
 	"Modules": [
 		{
 			"Name": "XMPPChat",
@@ -20,5 +20,5 @@
 	"EnabledByDefault": false,
 	"CanContainContent": false,
 	"IsBetaVersion": false,
-	"Installed": false
+	"Installed": true
 }
