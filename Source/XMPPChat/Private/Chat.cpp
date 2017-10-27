@@ -13,6 +13,7 @@ UChatMember::UChatMember(const FObjectInitializer& ObjectInitializer) : Super(Ob
 	Status(EUXmppPresenceStatus::Offline),
 	bIsAvailable(false),
 	Role(EUChatMemberRole::Participant)
+	Affiliation(EUChatMemberAffiliation::Member)
 {
 }
 
@@ -27,6 +28,7 @@ void UChatMember::ConvertFrom(const FXmppChatMember& ChatMember)
 	//NickName = ChatMember.UserPresence.NickName;
 	StatusStr = ChatMember.UserPresence.StatusStr;
 	Role = UChatUtil::GetEUChatMemberRole(ChatMember.Role);
+	Affiliation = UChatUtil::GetEUChatMemberAffiliation(ChatMember.Affiliation);
 }
 
 /***************** Base **************************/
